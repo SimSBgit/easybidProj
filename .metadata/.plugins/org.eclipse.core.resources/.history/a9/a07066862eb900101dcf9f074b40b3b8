@@ -1,0 +1,29 @@
+package com.easybid.model;
+
+import lombok.Data;
+
+@Data
+public class EasybidItem {
+
+	  private Long id;
+	    private Long cltrNo;
+	    private String cltrMnmtNo;
+	    private Long plnmNo;
+	    private Long pbctNo;
+	    private String cltrNm;
+	    private String ldnmAdrs;
+	    private String dpslMtdCd;
+	    private String dpslMtdNm;
+	    private Long minBidPrc;
+	    private Long apslAsesAvgAmt;
+	    private String pbctBegnDtm;
+	    private String pbctClsDtm;
+	    private String pbctCltrStatNm;
+	    private String sido;
+	    private String sigungu;
+	    private String emd;
+	    private String ctgrHirkId;
+	    private String ctgrHirkIdMid;
+	    private String jsonData;
+
+}

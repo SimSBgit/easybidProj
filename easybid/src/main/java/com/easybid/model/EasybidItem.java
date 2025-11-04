@@ -1,0 +1,21 @@
+package com.easybid.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class EasybidItem {
+	
+	private Long id;
+    private Long cltrNo;
+    private String cltrNm;
+    private Long apslAsesAvgAmt;
+    private Long minBidPrc;
+    private String pbctClsDtm;
+    
+}

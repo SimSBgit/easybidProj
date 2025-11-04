@@ -1,0 +1,76 @@
+package com.easybid.service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.easybid.mapper.EasybidMapper;
+import com.easybid.model.EasybidItem;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class EasybidService {
+
+    private final EasybidMapper easybidMapper;
+
+    // 샘플 API URL (임시)
+    @Value("${openapi.onbid.url}")
+    private String baseUrl;
+
+    @Value("${openapi.onbid.service-key}")
+    private String serviceKey;
+    
+    public String fetchData(int pageNo, int numOfRows) throws IOException {
+        
+    }
+    
+    // XML → JSON → DB 저장
+    public List<EasybidItem> fetchAndSaveItems(int pageNo, int numOfRows) throws Exception {
+    	
+    	String apiUrl = baseUrl
+                + "?serviceKey=" + serviceKey
+                + "&pageNo=" + pageNo
+                + "&numOfRows=" + numOfRows;
+
+        log.info("요청 URL: " + apiUrl);
+    	
+        RestTemplate restTemplate = new RestTemplate();
+        String xmlResponse = restTemplate.getForObject(apiUrl, String.class);
+
+        XmlMapper xmlMapper = new XmlMapper();
+        JsonNode root = xmlMapper.readTree(xmlResponse);
+        JsonNode items = root.path("body").path("items").path("item");
+
+        List<EasybidItem> list = new ArrayList<>();
+
+        if (items.isArray()) {
+            for (JsonNode node : items) {
+                EasybidItem item = new EasybidItem();
+                item.setCltrNo(node.path("cltrNo").asLong());
+                item.setCltrNm(node.path("cltrNm").asText(""));
+                item.setApslAsesAvgAmt(node.path("apslAsesAvgAmt").asLong());
+                item.setMinBidPrc(node.path("minBidPrc").asLong());
+                item.setPbctClsDtm(node.path("pbctClsDtm").asText(""));
+
+                easybidMapper.insert(item);
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    public List<EasybidItem> getAll() {
+        return easybidMapper.findAll();
+    }
+}

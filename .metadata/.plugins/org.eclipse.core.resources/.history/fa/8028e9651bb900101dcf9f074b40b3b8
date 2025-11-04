@@ -1,0 +1,25 @@
+package com.easybid.dto;
+
+import lombok.Data;
+
+@Data
+public class EasybidItemDTO {
+
+	 private Long cltrNo;          // 물건번호
+	    private String cltrNm;        // 물건명
+	    private String ldnmAdrs;      // 도로명주소
+	    private String dpslMtdCd;     // 처분방식코드
+	    private String dpslMtdNm;     // 처분방식명
+	    private Long minBidPrc;       // 최저입찰가
+	    private Long apslAsesAvgAmt;  // 감정가
+	    private String pbctBegnDtm;   // 입찰시작일시
+	    private String pbctClsDtm;    // 입찰마감일시
+	    private String pbctCltrStatNm;// 상태
+	    private String sido;
+	    private String sigungu;
+	    private String emd;
+	    private String ctgrHirkId;
+	    private String ctgrHirkIdMid;
+	    private String cltrMnmtNo;
+	    
+}

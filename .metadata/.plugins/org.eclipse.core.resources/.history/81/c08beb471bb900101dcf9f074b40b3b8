@@ -1,0 +1,9 @@
+package com.easybid.dto;
+
+import lombok.Data;
+
+@Data
+public class EasybidItem {
+
+	
+}

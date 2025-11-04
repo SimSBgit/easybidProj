@@ -1,0 +1,37 @@
+package com.easybid.model;
+
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
+import lombok.Data;
+
+@Data
+public class EasybidItem {
+
+	  @JacksonXmlProperty(localName = "PLNM_NO")
+	    private String plnmNo;
+
+	    @JacksonXmlProperty(localName = "PBCT_NO")
+	    private String pbctNo;
+
+	    @JacksonXmlProperty(localName = "CLTR_NM")
+	    private String cltrNm;
+
+	    @JacksonXmlProperty(localName = "LDNM_ADRS")
+	    private String ldnmAdrs;
+
+	    @JacksonXmlProperty(localName = "DPSL_MTD_NM")
+	    private String dpslMtdNm;
+
+	    @JacksonXmlProperty(localName = "MIN_BID_PRC")
+	    private String minBidPrc;
+
+	    @JacksonXmlProperty(localName = "APSL_ASES_AVG_AMT")
+	    private String apslAsesAvgAmt;
+
+	    @JacksonXmlProperty(localName = "PBCT_BEGN_DTM")
+	    private String pbctBegnDtm;
+
+	    @JacksonXmlProperty(localName = "PBCT_CLS_DTM")
+	    private String pbctClsDtm;
+
+}

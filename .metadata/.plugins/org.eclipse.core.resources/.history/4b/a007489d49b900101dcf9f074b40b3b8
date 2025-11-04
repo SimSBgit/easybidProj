@@ -1,0 +1,17 @@
+package com.easybid.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class EasybidCreateDTO {
+
+    private Long cltrNo;
+    private String cltrNm;
+    private Long minBidPrc;
+    private String pbctBegnDtm;
+    private String pbctClsDtm;
+}

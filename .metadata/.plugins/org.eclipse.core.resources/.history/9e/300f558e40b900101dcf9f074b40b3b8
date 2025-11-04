@@ -1,0 +1,148 @@
+package com.easybid.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.easybid.mapper.EasybidMapper;
+import com.easybid.model.EasybidItem;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class EasybidService {
+
+    private final EasybidMapper easybidMapper;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final XmlMapper xmlMapper = new XmlMapper();
+    private final ObjectMapper jsonMapper = new ObjectMapper();
+
+    @Value("${openapi.onbid.url}")
+    private String baseUrl;
+
+    @Value("${openapi.onbid.service-key}")
+    private String serviceKey;
+
+    public List<EasybidItem> fetchAndSaveItems(int pageNo, int numOfRows) throws Exception {
+        String url = baseUrl
+                + "?serviceKey=" + serviceKey
+                + "&pageNo=" + pageNo
+                + "&numOfRows=" + numOfRows;
+
+        String xmlResponse = restTemplate.getForObject(url, String.class);
+        if (xmlResponse == null || xmlResponse.isBlank()) return List.of();
+
+        JsonNode root = xmlMapper.readTree(xmlResponse);
+
+        // 공공데이터 포맷에 따라 경로가 다를 수 있음: response/body/items/item 또는 body/items/item
+        JsonNode itemsNode = root.path("response").path("body").path("items").path("item");
+        if (itemsNode.isMissingNode()) {
+            itemsNode = root.path("body").path("items").path("item");
+        }
+
+        List<EasybidItem> saved = new ArrayList<>();
+        if (itemsNode.isArray()) {
+            for (JsonNode node : itemsNode) {
+                EasybidItem it = toItem(node);
+                // store original item JSON too
+                String jsonData = jsonMapper.writeValueAsString(node);
+                it.setJsonData(jsonData);
+
+                try {
+                    easybidMapper.insertItem(it);
+                    saved.add(it);
+                } catch (Exception e) {
+                    // 삽입 실패 로깅 — 실무에선 상세 로깅/재시도/중복 체크 필요
+                    System.err.println("Insert failed for item: " + it.getCltrMnmtNo() + " cause: " + e.getMessage());
+                }
+            }
+        }
+        return saved;
+    }
+
+    public List<EasybidItem> getAllFromDb() {
+        return easybidMapper.findAll();
+    }
+
+    private EasybidItem toItem(JsonNode node) {
+        EasybidItem it = new EasybidItem();
+
+        it.setPlnmNo(asLong(node, "PLNM_NO", "plnmNo"));
+        it.setPbctNo(asLong(node, "PBCT_NO", "pbctNo"));
+        it.setPbctCdtnNo(asLong(node, "PBCT_CDTN_NO", "pbctCdtnNo"));
+        it.setCltrNo(asLong(node, "CLTR_NO", "cltrNo"));
+        it.setCltrHstrNo(asLong(node, "CLTR_HSTR_NO", "cltrHstrNo"));
+
+        it.setScrnGrpCd(getText(node, "SCRN_GRP_CD", "scrnGrpCd"));
+        it.setCtgrFullNm(getText(node, "CTGR_FULL_NM", "ctgrFullNm"));
+        it.setBidMnmtNo(getText(node, "BID_MNMT_NO", "bidMnmtNo"));
+
+        it.setCltrNm(getText(node, "CLTR_NM", "cltrNm"));
+        it.setCltrMnmtNo(getText(node, "CLTR_MNMT_NO", "cltrMnmtNo"));
+        it.setLdnmAdrs(getText(node, "LDNM_ADRS", "ldnmAdrs"));
+        it.setNmrddAdrs(getText(node, "NMRD_ADRS", "nmrddAdrs"));
+        it.setLdnmPnu(getText(node, "LDNM_PNU", "ldnmPnu"));
+
+        it.setDpslMtdCd(getText(node, "DPSL_MTD_CD", "dpslMtdCd"));
+        it.setDpslMtdNm(getText(node, "DPSL_MTD_NM", "dpslMtdNm"));
+        it.setBidMtdNm(getText(node, "BID_MTD_NM", "bidMtdNm"));
+        it.setMinBidPrc(asLong(node, "MIN_BID_PRC", "minBidPrc"));
+        it.setApslAsesAvgAmt(asLong(node, "APSL_ASES_AVG_AMT", "apslAsesAvgAmt"));
+        it.setFeeRate(getText(node, "FEE_RATE", "feeRate"));
+
+        it.setPbctBegnDtm(getText(node, "PBCT_BEGN_DTM", "pbctBegnDtm"));
+        it.setPbctClsDtm(getText(node, "PBCT_CLS_DTM", "pbctClsDtm"));
+        it.setPbctCltrStatNm(getText(node, "PBCT_CLTR_STAT_NM", "pbctCltrStatNm"));
+
+        it.setUscbCnt(asLong(node, "USCBD_CNT", "uscbCnt"));
+        it.setIqryCnt(asLong(node, "IQRY_CNT", "iqryCnt"));
+
+        it.setGoodsNm(getText(node, "GOODS_NM", "goodsNm"));
+
+        it.setManf(getText(node, "MANF", "manf"));
+        it.setMdl(getText(node, "MDL", "mdl"));
+        it.setNrgt(getText(node, "NRGT", "nrgt"));
+        it.setGrbx(getText(node, "GRBX", "grbx"));
+        it.setEndpc(getText(node, "ENDPC", "endpc"));
+        it.setVhclMlge(getText(node, "VHCL_MLGE", "vhclMlge"));
+        it.setFuel(getText(node, "FUEL", "fuel"));
+        it.setScrtNm(getText(node, "SCRT_NM", "scrtNm"));
+        it.setTpbz(getText(node, "TPBZ", "tpbz"));
+        it.setItmNm(getText(node, "ITM_NM", "itmNm"));
+        it.setMmbRgtNm(getText(node, "MMB_RGT_NM", "mmbRgtNm"));
+
+        it.setSido(getText(node, "SIDO", "sido"));
+        it.setSigungu(getText(node, "SGK", "sigungu")); // some APIs use SGK
+        if (it.getSigungu() == null) it.setSigungu(getText(node, "SGG", "sigungu"));
+        it.setEmd(getText(node, "EMD", "emd"));
+        it.setCtgrHirkId(getText(node, "CTGR_HIRK_ID", "ctgrHirkId"));
+        it.setCtgrHirkIdMid(getText(node, "CTGR_HIRK_ID_MID", "ctgrHirkIdMid"));
+
+        return it;
+    }
+
+    private String getText(JsonNode node, String ... keys) {
+        for (String k : keys) {
+            JsonNode v = node.path(k);
+            if (!v.isMissingNode() && !v.isNull() && !v.asText().isBlank()) return v.asText();
+        }
+        return null;
+    }
+
+    private Long asLong(JsonNode node, String ... keys) {
+        String s = getText(node, keys);
+        if (s == null) return null;
+        try {
+            return Long.parseLong(s.replaceAll("[^0-9-]", ""));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}
