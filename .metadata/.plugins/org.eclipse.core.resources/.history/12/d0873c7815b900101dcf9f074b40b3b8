@@ -1,6 +1,0 @@
-package com.easybid.mapper;
-
-public interface EasybidMapper {
-
-	
-}
