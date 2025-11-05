@@ -25,8 +25,8 @@ public class EasybidRestController {
 //	}
 	
     @GetMapping(value = "/fetch", produces = "application/json")
-    public List<EasybidItem> fetchAndSave(@RequestParam(defaultValue = "1") int pageNo,
-    	@RequestParam(defaultValue = "5") int numOfRows) throws Exception {
+    public List<EasybidItem> fetchAndSave(@RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
+    	@RequestParam(name = "numOfRows", defaultValue = "5") int numOfRows) throws Exception {
         return easybidService.fetchAndSaveItems(pageNo, numOfRows);
     }
 

@@ -12,11 +12,9 @@ CREATE TABLE auction_item (
     pbct_cls_dtm VARCHAR(20)
 );
 
-DROP TABLE auction_item;
-
 SELECT * FROM auction_item;
 
+DELETE FROM auction_item;
 
-
-
+DROP TABLE auction_item;
 

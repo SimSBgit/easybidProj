@@ -8,9 +8,9 @@ import com.easybid.model.EasybidItem;
 
 @Mapper
 public interface EasybidMapper {
-	
-	  void insert(EasybidItem item);
-	  
-	    List<EasybidItem> findAll();
-	    
+
+	void insert(EasybidItem item);
+
+	List<EasybidItem> findAll();
+
 }

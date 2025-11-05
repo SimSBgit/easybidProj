@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.easybid.mapper.EasybidMapper">
 
-    <insert id="insert" parameterType="EasybidItem">
+    <insert id="insert" parameterType="EasybidItem" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO auction_item
         (cltr_no, cltr_nm, apsl_ases_avg_amt, min_bid_prc, pbct_cls_dtm)
         VALUES
