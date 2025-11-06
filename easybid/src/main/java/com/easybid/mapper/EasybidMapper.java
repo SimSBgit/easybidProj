@@ -17,4 +17,6 @@ public interface EasybidMapper {
 	EasybidItem findByPlnmNoAndPbctNo(@Param("plnmNo") Long plnmNo, 
 									  @Param("pbctNo") Long pbctNo);
 
+	EasybidItem findLatestByPlnmNo(Long plnmNo);
+
 }

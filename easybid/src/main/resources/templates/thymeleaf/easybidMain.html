@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +21,7 @@
         .header {
             background: rgba(255, 255, 255, 0.95);
             padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .container {
@@ -77,7 +78,7 @@
             background: white;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .search-title {
@@ -174,7 +175,7 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             transition: transform 0.3s;
         }
@@ -204,7 +205,7 @@
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .section-title {
@@ -319,6 +320,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="container">
@@ -328,7 +330,7 @@
                     <span>캠코 공매물건 조회</span>
                 </div>
                 <nav class="nav-menu">
-                    <a href="#home">홈</a>
+                    <a th:href="@{/easybid}">홈</a>
                     <a href="#search">물건검색</a>
                     <a href="#schedule">공고일정</a>
                     <a href="#guide">이용안내</a>
@@ -338,65 +340,68 @@
 
             <div class="search-section">
                 <h2 class="search-title">🔍 공매물건 검색</h2>
-                <div class="search-grid">
-                    <div class="search-item">
-                        <label>처분방법</label>
-                        <select>
-                            <option value="">전체</option>
-                            <option value="0001">매각</option>
-                            <option value="0002">임대</option>
-                        </select>
+                <form th:action="@{/easybid/search}" method="get">
+                    <div class="search-grid">
+                        <div class="search-item">
+                            <label>처분방법</label>
+                            <select>
+                                <option value="">전체</option>
+                                <option value="0001">매각</option>
+                                <option value="0002">임대</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>물건종류</label>
+                            <select>
+                                <option value="">전체</option>
+                                <option value="10000">부동산</option>
+                                <option value="20000">동산</option>
+                                <option value="30000">차량</option>
+                                <option value="40000">기타</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>시도</label>
+                            <select>
+                                <option value="">전체</option>
+                                <option value="서울특별시">서울특별시</option>
+                                <option value="경기도">경기도</option>
+                                <option value="강원도">강원도</option>
+                                <option value="부산광역시">부산광역시</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>시군구</label>
+                            <select>
+                                <option value="">전체</option>
+                                <option value="강남구">강남구</option>
+                                <option value="강동구">강동구</option>
+                                <option value="수원시">수원시</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label>최저입찰가(만원)</label>
+                            <input type="number" placeholder="최소 금액">
+                        </div>
+                        <div class="search-item">
+                            <label>~</label>
+                            <input type="number" placeholder="최대 금액">
+                        </div>
+                        <div class="search-item">
+                            <label>물건명</label>
+                            <input type="text" placeholder="물건명 입력">
+                        </div>
+                        <div class="search-item">
+                            <label>물건관리번호</label>
+                            <input type="text" placeholder="2024-XXXX-XXXXXX">
+                        </div>
                     </div>
-                    <div class="search-item">
-                        <label>물건종류</label>
-                        <select>
-                            <option value="">전체</option>
-                            <option value="10000">부동산</option>
-                            <option value="20000">동산</option>
-                            <option value="30000">차량</option>
-                            <option value="40000">기타</option>
-                        </select>
+                    <div class="search-buttons">
+                        <button class="btn btn-primary" onclick="searchItems()">검색</button>
+                        <button class="btn btn-secondary" onclick="resetSearch()">초기화</button>
                     </div>
-                    <div class="search-item">
-                        <label>시도</label>
-                        <select>
-                            <option value="">전체</option>
-                            <option value="서울특별시">서울특별시</option>
-                            <option value="경기도">경기도</option>
-                            <option value="강원도">강원도</option>
-                            <option value="부산광역시">부산광역시</option>
-                        </select>
-                    </div>
-                    <div class="search-item">
-                        <label>시군구</label>
-                        <select>
-                            <option value="">전체</option>
-                            <option value="강남구">강남구</option>
-                            <option value="강동구">강동구</option>
-                            <option value="수원시">수원시</option>
-                        </select>
-                    </div>
-                    <div class="search-item">
-                        <label>최저입찰가(만원)</label>
-                        <input type="number" placeholder="최소 금액">
-                    </div>
-                    <div class="search-item">
-                        <label>~</label>
-                        <input type="number" placeholder="최대 금액">
-                    </div>
-                    <div class="search-item">
-                        <label>물건명</label>
-                        <input type="text" placeholder="물건명 입력">
-                    </div>
-                    <div class="search-item">
-                        <label>물건관리번호</label>
-                        <input type="text" placeholder="2024-XXXX-XXXXXX">
-                    </div>
-                </div>
-                <div class="search-buttons">
-                    <button class="btn btn-primary" onclick="searchItems()">검색</button>
-                    <button class="btn btn-secondary" onclick="resetSearch()">초기화</button>
-                </div>
+                </form>
+
             </div>
         </div>
     </div>
@@ -442,19 +447,20 @@
                                 <span>📍 </span>
                                 <span th:text="${item.cltrNm}"></span>
                             </div>
-                            <div> <!--입찰 시작일-->
+                            <div> <!--입찰 시작/마감일-->
                                 <span>📅입찰 시작 : </span>
-                                <span th:text="${item.pbctBegnDtm}"></span> <br>
+                                <span th:text="${item.getPbctBegnDtmFormatted}"></span> <br>
                                 <span>📅입찰 마감 : </span>
-                                <span th:text="${item.pbctClsDtm}"></span>
+                                <span th:text="${item.getpbctClsDtmFormatted}"></span>
                             </div>
                         </div>
                         <div class="item-price"> <!--최저입찰가-->
                             <span>최저입찰가 : </span>
                             <span th:text="${#numbers.formatInteger(item.minBidPrc, 0, 'COMMA')}">0</span>
                             <span>원</span>
-                        </div> 
-                        <span class="item-badge">입찰진행중</span>
+                        </div>
+                        <!--물건(입찰) 상태-->
+                        <span th:text="${item.pbctCltrStatNm}" class="item-badge"></span>
                     </div>
                 </div>
             </div>
@@ -489,4 +495,5 @@
         }
     </script>
 </body>
+
 </html>

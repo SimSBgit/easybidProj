@@ -13,7 +13,7 @@
             fee_rate, pbct_begn_dtm, pbct_cls_dtm, pbct_cltr_stat_nm,
             uscbd_cnt, iqry_cnt, goods_nm, manf, mdl, nrgt, grbx, endpc, vhcl_mlge, fuel,
             scrt_nm, tpbz, itm_nm, mmb_rgt_nm, sido, sigungu, emd, ctgr_hirk_id, ctgr_hirk_id_mid,
-            json_data
+            cltr_img_files, json_data
         )
         VALUES
         (
@@ -23,7 +23,7 @@
             #{feeRate}, #{pbctBegnDtm}, #{pbctClsDtm}, #{pbctCltrStatNm},
             #{uscbCnt}, #{iqryCnt}, #{goodsNm}, #{manf}, #{mdl}, #{nrgt}, #{grbx}, #{endpc}, #{vhclMlge}, #{fuel},
             #{scrtNm}, #{tpbz}, #{itmNm}, #{mmbRgtNm}, #{sido}, #{sigungu}, #{emd}, #{ctgrHirkId}, #{ctgrHirkIdMid},
-            #{jsonData}
+            #{cltrImgFiles}, #{jsonData}
         )
     </insert>
 
@@ -40,5 +40,13 @@
           AND pbct_no = #{pbctNo}
         LIMIT 1
     </select>
+    
+    <select id="findLatestByPlnmNo" parameterType="long" resultType="EasybidItem">
+    	SELECT *
+    	FROM auction_item
+    	WHERE plnm_no = #{plnmNo}
+    	ORDER BY pbct_no DESC
+    	LIMIT 1
+	</select>
 
 </mapper>

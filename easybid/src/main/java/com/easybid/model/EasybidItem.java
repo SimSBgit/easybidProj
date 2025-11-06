@@ -1,5 +1,8 @@
 package com.easybid.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,6 +56,21 @@ public class EasybidItem {
     private String emd;
     private String ctgrHirkId;
     private String ctgrHirkIdMid;
+    private String cltrImgFiles;
     private String jsonData; // 전체 JSON 보관
     
+    public String getPbctBegnDtmFormatted() {
+        if (pbctBegnDtm == null || pbctBegnDtm.length() != 14) return pbctBegnDtm;
+        DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        DateTimeFormatter outFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(pbctBegnDtm, inFmt).format(outFmt);
+    }
+    
+    public String getpbctClsDtmFormatted() {
+        if (pbctClsDtm == null || pbctClsDtm.length() != 14) return pbctClsDtm;
+        DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        DateTimeFormatter outFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(pbctClsDtm, inFmt).format(outFmt);
+    }
+
 }

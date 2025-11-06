@@ -46,8 +46,10 @@ CREATE TABLE auction_item (
     emd VARCHAR(100) NULL,
     ctgr_hirk_id VARCHAR(50) NULL,
     ctgr_hirk_id_mid VARCHAR(50) NULL,
+    cltr_img_files TEXT NULL,
     json_data LONGTEXT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_plnm_pbct UNIQUE (plnm_no, pbct_no)
 );
 
 SELECT * FROM auction_item;
