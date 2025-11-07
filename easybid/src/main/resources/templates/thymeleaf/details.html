@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${item.cltrNm} + ' 상세정보 | EasyBid'">공매물건 상세정보</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .detail-container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        .detail-header img {
+            width: 240px;
+            height: 180px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+        .detail-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .detail-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            margin-top: 20px;
+        }
+        .detail-info div {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .detail-info strong {
+            display: block;
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        .price-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f1f9ff;
+            border-left: 4px solid #0078ff;
+            border-radius: 10px;
+        }
+        .price-box .value {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        .status {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #007bff;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: #0056d6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="detail-container">
+        <!-- 상단 이미지 + 제목 -->
+        <div class="detail-header">
+            <img th:src="${item.cltrImgFiles != null ? item.cltrImgFiles : '/img/noimage.png'}" alt="물건 이미지">
+            <div>
+                <div class="detail-title" th:text="${item.cltrNm}">물건명</div>
+                <div th:text="${item.ctgrFullNm}">카테고리</div>
+                <div th:text="'공고번호: ' + ${item.plnmNo}"></div>
+            </div>
+        </div>
+
+        <!-- 가격 및 상태 -->
+        <div class="price-box">
+            <div>💰 최저입찰가</div>
+            <div class="value" th:text="${#numbers.formatInteger(item.minBidPrc, 0, 'COMMA')} + ' 원'">0 원</div>
+            <div>📊 평가금액: <span th:text="${#numbers.formatInteger(item.apslAsesAvgAmt, 0, 'COMMA')} + ' 원'"></span></div>
+            <div class="status" th:text="'상태: ' + ${item.pbctCltrStatNm}"></div>
+        </div>
+
+        <!-- 기본 정보 -->
+        <div class="detail-info">
+            <div>
+                <strong>입찰 시작일</strong>
+                <span th:text="${item.pbctBegnDtm}">2025-11-01</span>
+            </div>
+            <div>
+                <strong>입찰 마감일</strong>
+                <span th:text="${item.pbctClsDtm}">2025-11-10</span>
+            </div>
+            <div>
+                <strong>공매 방법</strong>
+                <span th:text="${item.dpslMtdNm}">매각</span>
+            </div>
+            <div>
+                <strong>입찰 방법</strong>
+                <span th:text="${item.bidMtdNm}">온라인 입찰</span>
+            </div>
+            <div>
+                <strong>주소(지번)</strong>
+                <span th:text="${item.ldnmAdrs}"></span>
+            </div>
+            <div>
+                <strong>주소(도로명)</strong>
+                <span th:text="${item.nmrddAdrs}"></span>
+            </div>
+            <div>
+                <strong>조회수</strong>
+                <span th:text="${item.iqryCnt} + ' 회'"></span>
+            </div>
+            <div>
+                <strong>입찰자 수</strong>
+                <span th:text="${item.uscbCnt} + ' 명'"></span>
+            </div>
+        </div>
+
+        <!-- 추가 정보 -->
+        <div class="detail-info" style="margin-top:30px;">
+            <div>
+                <strong>소재지</strong>
+                <span th:text="${item.sido} + ' ' + ${item.sigungu} + ' ' + ${item.emd}"></span>
+            </div>
+            <div>
+                <strong>분류 ID</strong>
+                <span th:text="${item.ctgrHirkId}"></span>
+            </div>
+            <div>
+                <strong>물건번호</strong>
+                <span th:text="${item.cltrNo}"></span>
+            </div>
+            <div>
+                <strong>공매번호</strong>
+                <span th:text="${item.pbctNo}"></span>
+            </div>
+        </div>
+
+        <a href="/easybid/items" class="back-btn">← 목록으로 돌아가기</a>
+    </div>
+</body>
+</html>

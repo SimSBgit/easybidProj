@@ -19,4 +19,12 @@ public interface EasybidMapper {
 
 	EasybidItem findLatestByPlnmNo(Long plnmNo);
 
+	List<EasybidItem> findPagedAll(@Param("offset") int offset,@Param("numOfRows") int numOfRows);
+
+	int getTotalCount();
+
+	EasybidItem getDetails(@Param("id") Long id);
+
+	EasybidItem findUuid(@Param("uuid") String uuid);
+
 }

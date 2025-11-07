@@ -30,23 +30,12 @@ public class EasybidRestController {
 	        easybidService.fetchAndPrintApi(pageNo, numOfRows);
 	        return "✅ 콘솔에서 API 응답 내용을 확인하세요.";
 	    }
-	
-//	@GetMapping("/fetch")
-//	public List<EasybidItem> fetchAndSave() throws Exception {
-//		return easybidService.fetchAndSaveItems();
-//	}
-	
-//    @GetMapping(value = "/fetch", 
-//    		produces = MediaType.APPLICATION_JSON_VALUE)
-//    public List<EasybidItem> fetchAndSave(@RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
-//    	@RequestParam(name = "numOfRows", defaultValue = "5") int numOfRows) throws Exception {
-//        return easybidService.fetchAndSaveItems(pageNo, numOfRows);
-//    }
 
+//	온비드 api 10000건을 받아와서 중복제거하고 최신날짜만 DB에 저장
 	@GetMapping(value = "/fetchAll", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<EasybidItem> fetchAllPages() throws Exception {
-	    int totalPages = 5; // 5페이지 * 20행 = 100개
-	    int rowsPerPage = 20;
+	    int totalPages = 5; // 5페이지 * 2000행 = 10000개
+	    int rowsPerPage = 2000;
 
 	    List<EasybidItem> allItems = new ArrayList<>();
 
@@ -61,13 +50,26 @@ public class EasybidRestController {
 	    log.info("✅ 총 저장된 데이터 수: {}", allItems.size());
 	    return allItems;
 	}
-//
-	// DB 데이터 100개 조회 
-	@GetMapping(value = "/items",
-			produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<EasybidItem> getItems() {
-		return easybidService.getAll();
+
+//	DB 데이터 - 1페이지당 10개, 전체 조회
+	@GetMapping(value = "/items", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<EasybidItem> getItems(@RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
+    		@RequestParam(name = "numOfRows", defaultValue = "10") int numOfRows) {
+		int offset = (pageNo - 1) * numOfRows;
+		return easybidService.getAll(offset, numOfRows);
 	}
+	
+//	@GetMapping("/fetch")
+//	public List<EasybidItem> fetchAndSave() throws Exception {
+//		return easybidService.fetchAndSaveItems();
+//	}
+	
+//    @GetMapping(value = "/fetch", 
+//    		produces = MediaType.APPLICATION_JSON_VALUE)
+//    public List<EasybidItem> fetchAndSave(@RequestParam(name = "pageNo", defaultValue = "1") int pageNo,
+//    	@RequestParam(name = "numOfRows", defaultValue = "5") int numOfRows) throws Exception {
+//        return easybidService.fetchAndSaveItems(pageNo, numOfRows);
+//    }
 	
 //	콘솔에서 DB API 출력
 //	@GetMapping("/printApi")

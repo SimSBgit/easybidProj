@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class EasybidItem {
 	
 	private Long id;
+	private String uuid;
     private Long plnmNo;
     private Long pbctNo;
     private Long pbctCdtnNo;

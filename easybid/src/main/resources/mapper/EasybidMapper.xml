@@ -7,7 +7,7 @@
     <insert id="insert" parameterType="EasybidItem" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO auction_item
          (
-            plnm_no, pbct_no, pbct_cdtn_no, cltr_no, cltr_hstr_no, scrn_grp_cd,
+            uuid, plnm_no, pbct_no, pbct_cdtn_no, cltr_no, cltr_hstr_no, scrn_grp_cd,
             ctgr_full_nm, bid_mnmt_no, cltr_nm, cltr_mnmt_no, ldnm_adrs, nmrdd_adrs,
             ldnm_pnu, dpsl_mtd_cd, dpsl_mtd_nm, bid_mtd_nm, min_bid_prc, apsl_ases_avg_amt,
             fee_rate, pbct_begn_dtm, pbct_cls_dtm, pbct_cltr_stat_nm,
@@ -17,7 +17,7 @@
         )
         VALUES
         (
-            #{plnmNo}, #{pbctNo}, #{pbctCdtnNo}, #{cltrNo}, #{cltrHstrNo}, #{scrnGrpCd},
+            #{uuid}, #{plnmNo}, #{pbctNo}, #{pbctCdtnNo}, #{cltrNo}, #{cltrHstrNo}, #{scrnGrpCd},
             #{ctgrFullNm}, #{bidMnmtNo}, #{cltrNm}, #{cltrMnmtNo}, #{ldnmAdrs}, #{nmrddAdrs},
             #{ldnmPnu}, #{dpslMtdCd}, #{dpslMtdNm}, #{bidMtdNm}, #{minBidPrc}, #{apslAsesAvgAmt},
             #{feeRate}, #{pbctBegnDtm}, #{pbctClsDtm}, #{pbctCltrStatNm},
@@ -28,8 +28,15 @@
     </insert>
 
     <!-- 전체 조회 -->
+    <!--
     <select id="findAll" resultType="EasybidItem">
         SELECT * FROM auction_item ORDER BY id DESC LIMIT 100
+    </select>
+    -->
+    
+    <!-- 페이지당 10개 전체 조회 -->
+    <select id="findPagedAll" resultType="EasybidItem">
+        SELECT * FROM auction_item ORDER BY id DESC LIMIT #{numOfRows} OFFSET #{offset}
     </select>
     
     <!-- 🔹 중복 체크용 조회 쿼리 추가 -->
@@ -47,6 +54,18 @@
     	WHERE plnm_no = #{plnmNo}
     	ORDER BY pbct_no DESC
     	LIMIT 1
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+    	SELECT COUNT(*) FROM auction_item
+	</select>
+	
+	<select id="getDetails" parameterType="long">
+		SELECT * FROM auction_item WHERE id = #{id}
+	</select>
+	
+	<select id="findUuid" parameterType="string">
+		SELECT * FROM auction_item WHERE uuid = #{uuid}
 	</select>
 
 </mapper>

@@ -4,7 +4,8 @@ CREATE DATABASE IF NOT EXISTS easybiddb;
 USE easybiddb;
 
 CREATE TABLE auction_item (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    uuid VARCHAR(100) NOT NULL,
     plnm_no BIGINT NULL,
     pbct_no BIGINT NULL,
     pbct_cdtn_no BIGINT NULL,
@@ -49,6 +50,8 @@ CREATE TABLE auction_item (
     cltr_img_files TEXT NULL,
     json_data LONGTEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_id PRIMARY KEY (id),
+    CONSTRAINT uq_uuid UNIQUE (UUID),
     CONSTRAINT uq_plnm_pbct UNIQUE (plnm_no, pbct_no)
 );
 
@@ -57,4 +60,9 @@ SELECT * FROM auction_item;
 DELETE FROM auction_item;
 
 DROP TABLE auction_item;
+
+SELECT * FROM auction_item WHERE id = 1;
+
+
+
 

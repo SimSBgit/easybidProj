@@ -1,9 +1,12 @@
 package com.easybid.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,60 +69,28 @@ public class EasybidService {
 //        return list;
 //    }
 
-	public void fetchAndPrintApi(int pageNo, int numOfRows) {
-        try {
-            // ✅ 1. API URL 구성
-            String apiUrl = baseUrl
-                    + "?serviceKey=" + serviceKey
-                    + "&pageNo=" + pageNo
-                    + "&numOfRows=" + numOfRows;
-
-            log.info("📡 요청 URL: {}", apiUrl);
-
-            // ✅ 2. API 호출
-            RestTemplate restTemplate = new RestTemplate();
-            String xmlResponse = restTemplate.getForObject(apiUrl, String.class);
-
-            // ✅ 3. XML 응답 확인
-            if (xmlResponse == null || xmlResponse.isEmpty()) {
-                log.warn("⚠️ 응답 XML이 비어 있습니다!");
-                return;
-            }
-
-            // ✅ 4. XML 일부 출력 (너무 크면 콘솔 버벅일 수 있으므로 앞부분만)
-            log.info("📄 응답 XML (앞부분 미리보기): \n{}", 
-                    xmlResponse.substring(0, Math.min(1500, xmlResponse.length())));
-
-            // ✅ 5. XML → JSON 변환
-            XmlMapper xmlMapper = new XmlMapper();
-            JsonNode root = xmlMapper.readTree(xmlResponse);
-
-            JsonNode items = root.path("body").path("items").path("item");
-
-            log.info("📦 item 노드 개수: {}", items.isArray() ? items.size() : 0);
-
-            if (items.isArray()) {
-                for (JsonNode node : items) {
-                    Long plnmNo = node.path("PLNM_NO").asLong();
-                    Long pbctNo = node.path("PBCT_NO").asLong();
-                    String cltrNm = node.path("CLTR_NM").asText("");
-                    String imgInfo = node.path("CLTR_IMG_FILES").toString();
-
-                    log.info("📌 공고번호: {}, 공매번호: {}, 물건명: {}", plnmNo, pbctNo, cltrNm);
-                    log.info("🖼️ 이미지정보: {}", imgInfo);
-                }
-            }
-
-        } catch (Exception e) {
-            log.error("❌ API 호출/파싱 실패: {}", e.getMessage(), e);
-        }
-    }
-	
 // XML → DB 저장
 	@Transactional
 	public List<EasybidItem> fetchAndSaveItems(int pageNo, int numOfRows) throws Exception {
 
-		String apiUrl = baseUrl + "?serviceKey=" + serviceKey + "&pageNo=" + pageNo + "&numOfRows=" + numOfRows;
+		// 오늘 날짜 기준으로 7개월 전
+		LocalDate sevenMonthsAgo = LocalDate.now().minusMonths(7);
+
+		// 기준일 기준 ±14일
+		LocalDate startDate = sevenMonthsAgo.minusDays(14);
+		LocalDate endDate = sevenMonthsAgo.plusDays(14);
+
+		// API 호출용 포맷
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String start = startDate.format(formatter);
+		String end = endDate.format(formatter);
+
+		String apiUrl = baseUrl 
+				+ "?serviceKey=" + serviceKey 
+				+ "&pageNo=" + pageNo 
+				+ "&numOfRows=" + numOfRows
+				+ "&inqStrtDt=" + start
+				+ "&inqEndDt=" + end;
 
 		log.info("요청 URL: " + apiUrl);
 
@@ -182,6 +153,7 @@ public class EasybidService {
 						item.setCltrImgFiles("");
 					}
 
+					
 					item.setPbctCdtnNo(node.path("PBCT_CDTN_NO").asLong());
 					item.setCltrNo(node.path("CLTR_NO").asLong());
 					item.setCltrHstrNo(node.path("CLTR_HSTR_NO").asLong());
@@ -258,7 +230,7 @@ public class EasybidService {
 						}
 
 						if (existingInDb == null) {
-							easybidMapper.insert(item);
+							saveItem(item); // easybidMapper.insert(item) 대신
 							list.add(item);
 							log.info("✅ 저장 완료: 공고번호={}, 공매번호={}, 물건명={}", item.getPlnmNo(), item.getPbctNo(),
 									item.getCltrNm());
@@ -282,6 +254,52 @@ public class EasybidService {
 		log.info("📊 최신 공매 필터링 후: {}개", latestItemsMap.size());
 
 		return list;
+	}
+
+//	콘솔에서 공공데이터 api 바로 출력
+	public void fetchAndPrintApi(int pageNo, int numOfRows) {
+		try {
+			// ✅ 1. API URL 구성
+			String apiUrl = baseUrl + "?serviceKey=" + serviceKey + "&pageNo=" + pageNo + "&numOfRows=" + numOfRows;
+
+			log.info("📡 요청 URL: {}", apiUrl);
+
+			// ✅ 2. API 호출
+			RestTemplate restTemplate = new RestTemplate();
+			String xmlResponse = restTemplate.getForObject(apiUrl, String.class);
+
+			// ✅ 3. XML 응답 확인
+			if (xmlResponse == null || xmlResponse.isEmpty()) {
+				log.warn("⚠️ 응답 XML이 비어 있습니다!");
+				return;
+			}
+
+			// ✅ 4. XML 일부 출력 (너무 크면 콘솔 버벅일 수 있으므로 앞부분만)
+			log.info("📄 응답 XML (앞부분 미리보기): \n{}", xmlResponse.substring(0, Math.min(1500, xmlResponse.length())));
+
+			// ✅ 5. XML → JSON 변환
+			XmlMapper xmlMapper = new XmlMapper();
+			JsonNode root = xmlMapper.readTree(xmlResponse);
+
+			JsonNode items = root.path("body").path("items").path("item");
+
+			log.info("📦 item 노드 개수: {}", items.isArray() ? items.size() : 0);
+
+			if (items.isArray()) {
+				for (JsonNode node : items) {
+					Long plnmNo = node.path("PLNM_NO").asLong();
+					Long pbctNo = node.path("PBCT_NO").asLong();
+					String cltrNm = node.path("CLTR_NM").asText("");
+					String imgInfo = node.path("CLTR_IMG_FILES").toString();
+
+					log.info("📌 공고번호: {}, 공매번호: {}, 물건명: {}", plnmNo, pbctNo, cltrNm);
+					log.info("🖼️ 이미지정보: {}", imgInfo);
+				}
+			}
+
+		} catch (Exception e) {
+			log.error("❌ API 호출/파싱 실패: {}", e.getMessage(), e);
+		}
 	}
 
 //    콘솔에서 DB API 출력
@@ -326,7 +344,32 @@ public class EasybidService {
 //        }
 //    }
 
-	public List<EasybidItem> getAll() {
-		return easybidMapper.findAll();
+//	public List<EasybidItem> getAll() {
+//		return easybidMapper.findAll();
+//	}
+
+	public List<EasybidItem> getAll(int offset, int numOfRows) {
+		return easybidMapper.findPagedAll(offset, numOfRows);
 	}
+
+	public int getTotalCount() {
+		return easybidMapper.getTotalCount();
+	}
+
+	public EasybidItem findById(Long id) {
+		return easybidMapper.getDetails(id);
+	}
+
+	public EasybidItem findByUuId(String uuid) {
+		return easybidMapper.findUuid(uuid);
+	}
+	
+	public void saveItem(EasybidItem item) {
+        // UUID가 비어있다면 새로 생성
+        if (item.getUuid() == null || item.getUuid().isEmpty()) {
+            item.setUuid(UUID.randomUUID().toString());
+        }
+        easybidMapper.insert(item);
+    }
+	
 }

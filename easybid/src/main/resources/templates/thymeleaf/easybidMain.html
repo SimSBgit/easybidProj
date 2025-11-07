@@ -287,6 +287,11 @@
             margin-top: 10px;
         }
 
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
         .footer {
             background: rgba(255, 255, 255, 0.95);
             margin-top: 60px;
@@ -415,7 +420,7 @@
             </div>
             <div class="stat-card">
                 <div class="stat-icon">🏠</div>
-                <div class="stat-number">3,582</div>
+                <div th:text="${#numbers.formatInteger(totalCount, 0, 'COMMA')}" class="stat-number"></div>
                 <div class="stat-label">전체 물건 수</div>
             </div>
             <div class="stat-card">
@@ -464,6 +469,19 @@
                     </div>
                 </div>
             </div>
+            <!-- ✅ 페이지네이션 영역 -->
+            <div class="pagination">
+                <!-- 이전 버튼 -->
+                <a href="#" th:if="${currentPage > 1}" th:onclick="'changePage(' + (${currentPage} - 1) + ', event)'">
+                    ◀ 이전&nbsp
+                </a>
+                <span th:text="'페이지 ' + ${currentPage} + ' / ' + ${totalPages}"></span>
+                <!-- 다음 버튼 -->
+                <a href="#" th:if="${currentPage < totalPages}"
+                    th:onclick="'changePage(' + (${currentPage} + 1) + ', event)'">
+                    다음 ▶
+                </a>
+            </div>
         </div>
     </div>
 
@@ -474,26 +492,7 @@
         </div>
     </div>
 
-    <script>
-        function searchItems() {
-            alert('검색 기능이 실행됩니다.\n실제 구현 시 API를 호출하여 결과를 표시합니다.');
-        }
-
-        function resetSearch() {
-            document.querySelectorAll('input, select').forEach(el => {
-                if (el.tagName === 'SELECT') {
-                    el.selectedIndex = 0;
-                } else {
-                    el.value = '';
-                }
-            });
-        }
-
-        function viewItem(id) {
-            alert(`물건 상세 페이지로 이동합니다.\n물건 ID: ${id}`);
-            // 실제로는 window.location.href = '/item/' + id; 등으로 이동
-        }
-    </script>
+    <script th:src="@{/js/easybidJs.js}"></script>
 </body>
 
 </html>
