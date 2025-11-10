@@ -78,4 +78,5 @@ public class EasybidRestController {
 //        easybidService.printApiResponse(pageNo, numOfRows);
 //        return "✅ 콘솔에서 API 응답을 확인하세요!";
 //    }
+	
 }

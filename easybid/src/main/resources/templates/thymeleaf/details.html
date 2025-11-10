@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${item.cltrNm} + ' 상세정보 | EasyBid'">공매물건 상세정보</title>
+	<title th:text="${item != null ? item.cltrNm + ' 상세정보 | EasyBid' : '공매물건 상세정보'}"></title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .detail-container {
@@ -83,7 +83,7 @@
     <div class="detail-container">
         <!-- 상단 이미지 + 제목 -->
         <div class="detail-header">
-            <img th:src="${item.cltrImgFiles != null ? item.cltrImgFiles : '/img/noimage.png'}" alt="물건 이미지">
+            <img th:src="${item.cltrImgFiles != null ? item.cltrImgFiles : '/img/noimage.png'}" alt="이미지 데이터 없음">
             <div>
                 <div class="detail-title" th:text="${item.cltrNm}">물건명</div>
                 <div th:text="${item.ctgrFullNm}">카테고리</div>
@@ -118,7 +118,7 @@
                 <span th:text="${item.bidMtdNm}">온라인 입찰</span>
             </div>
             <div>
-                <strong>주소(지번)</strong>
+                <strong>지번 주소</strong>
                 <span th:text="${item.ldnmAdrs}"></span>
             </div>
             <div>
@@ -130,20 +130,20 @@
                 <span th:text="${item.iqryCnt} + ' 회'"></span>
             </div>
             <div>
-                <strong>입찰자 수</strong>
-                <span th:text="${item.uscbCnt} + ' 명'"></span>
+                <strong>용도명</strong>
+                <span th:text="${item.ctgrFullNm} + ' 명'"></span>
             </div>
         </div>
 
         <!-- 추가 정보 -->
         <div class="detail-info" style="margin-top:30px;">
             <div>
-                <strong>소재지</strong>
+                <strong>소재지 데이터 없음</strong>
                 <span th:text="${item.sido} + ' ' + ${item.sigungu} + ' ' + ${item.emd}"></span>
             </div>
             <div>
-                <strong>분류 ID</strong>
-                <span th:text="${item.ctgrHirkId}"></span>
+                <strong>공고번호</strong>
+                <span th:text="${item.plnmNo}"></span>
             </div>
             <div>
                 <strong>물건번호</strong>

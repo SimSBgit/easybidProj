@@ -63,6 +63,3 @@ DROP TABLE auction_item;
 
 SELECT * FROM auction_item WHERE id = 1;
 
-
-
-

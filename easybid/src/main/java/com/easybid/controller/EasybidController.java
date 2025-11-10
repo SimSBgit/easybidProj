@@ -17,8 +17,9 @@ import com.easybid.model.EasybidItem;
 import com.easybid.service.EasybidService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/easybid")
@@ -68,7 +69,9 @@ public class EasybidController {
 //	상세 페이지
 	@GetMapping(value = "/items/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String viewItemDetail(@PathVariable("uuid") String uuid, Model model) {
-	    EasybidItem item = easybidService.findByUuId(uuid);
+		log.info("요청받은 UUID: {} ", uuid);
+	    EasybidItem item = easybidService.findByUuid(uuid);
+	    log.info("조회된 item: {}", item);
 	    model.addAttribute("item", item);
 	    return "details";
 	}

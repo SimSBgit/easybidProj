@@ -129,6 +129,20 @@
             margin-top: 30px;
         }
 
+        .pageBtn {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+
+        .pageBtn.disabled {
+            color: gray;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .btn {
             padding: 14px 40px;
             border: none;
@@ -438,10 +452,10 @@
         <div class="recent-items">
             <h2 class="section-title">
                 <span>🔥</span>
-                <span>최근 등록 물건</span>
+                <span>전체 공매 물건</span>
             </h2>
             <div class="item-grid">
-                <div th:each="item : ${items}" class="item-card" onclick="viewItem(1)">
+                <div th:each="item : ${items}" class="item-card" th:attr="data-uuid=${item.uuid}">
                     <div class="item-image">🏢</div>
                     <div class="item-content">
                         <div class="item-title">
@@ -472,12 +486,13 @@
             <!-- ✅ 페이지네이션 영역 -->
             <div class="pagination">
                 <!-- 이전 버튼 -->
-                <a href="#" th:if="${currentPage > 1}" th:onclick="'changePage(' + (${currentPage} - 1) + ', event)'">
+                <a class="pageBtn" href="#" th:if="${currentPage > 1}"
+                    th:onclick="'changePage(' + (${currentPage} - 1) + ', event)'">
                     ◀ 이전&nbsp
                 </a>
                 <span th:text="'페이지 ' + ${currentPage} + ' / ' + ${totalPages}"></span>
                 <!-- 다음 버튼 -->
-                <a href="#" th:if="${currentPage < totalPages}"
+                <a class="pageBtn" href="#" th:if="${currentPage < totalPages}"
                     th:onclick="'changePage(' + (${currentPage} + 1) + ', event)'">
                     다음 ▶
                 </a>

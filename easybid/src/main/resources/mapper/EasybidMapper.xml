@@ -60,11 +60,13 @@
     	SELECT COUNT(*) FROM auction_item
 	</select>
 	
+	<!--
 	<select id="getDetails" parameterType="long">
 		SELECT * FROM auction_item WHERE id = #{id}
 	</select>
+	-->
 	
-	<select id="findUuid" parameterType="string">
+	<select id="findUuid" parameterType="string" resultType="EasybidItem">
 		SELECT * FROM auction_item WHERE uuid = #{uuid}
 	</select>
 

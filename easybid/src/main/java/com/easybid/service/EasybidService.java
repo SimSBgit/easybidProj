@@ -1,6 +1,7 @@
 package com.easybid.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,24 +74,25 @@ public class EasybidService {
 	@Transactional
 	public List<EasybidItem> fetchAndSaveItems(int pageNo, int numOfRows) throws Exception {
 
-		// 오늘 날짜 기준으로 7개월 전
-		LocalDate sevenMonthsAgo = LocalDate.now().minusMonths(7);
+		// 오늘 날짜 기준
+		LocalDate sevenMonthsAgo = LocalDate.now();
 
-		// 기준일 기준 ±14일
-		LocalDate startDate = sevenMonthsAgo.minusDays(14);
-		LocalDate endDate = sevenMonthsAgo.plusDays(14);
+		// 기준일 기준 60일 이전 + 30일 이후
+		LocalDate startDate = sevenMonthsAgo.minusDays(60);
+		LocalDate endDate = sevenMonthsAgo.plusDays(30);
 
-		// API 호출용 포맷
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String start = startDate.format(formatter);
-		String end = endDate.format(formatter);
+//		공공 데이터의 경우 inqStrtDt / inqEndDt을 기간 호출용 파라미터로 사용하는 경우 있음(꼭 기간 파라미터인 것은 아님).
+//		&pageNo=1&numOfRows=5&inqStrtDt=20240501&inqEndDt=20240514
+		
+//		// API 호출용 포맷
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+//		String start = startDate.format(formatter);
+//		String end = endDate.format(formatter);
 
 		String apiUrl = baseUrl 
 				+ "?serviceKey=" + serviceKey 
 				+ "&pageNo=" + pageNo 
-				+ "&numOfRows=" + numOfRows
-				+ "&inqStrtDt=" + start
-				+ "&inqEndDt=" + end;
+				+ "&numOfRows=" + numOfRows;
 
 		log.info("요청 URL: " + apiUrl);
 
@@ -153,7 +155,6 @@ public class EasybidService {
 						item.setCltrImgFiles("");
 					}
 
-					
 					item.setPbctCdtnNo(node.path("PBCT_CDTN_NO").asLong());
 					item.setCltrNo(node.path("CLTR_NO").asLong());
 					item.setCltrHstrNo(node.path("CLTR_HSTR_NO").asLong());
@@ -205,6 +206,31 @@ public class EasybidService {
 					item.setCtgrHirkId(node.path("CTGR_HIRK_ID").asText(""));
 					item.setCtgrHirkIdMid(node.path("CTGR_HIRK_ID_MID").asText(""));
 
+			        // 🔹 날짜 필터링 시작
+			        try {
+			            String begnDtm = node.path("PBCT_BEGN_DTM").asText("");
+			            if (begnDtm == null || begnDtm.length() != 14) {
+			                log.debug("⏭️ 날짜 형식 불일치로 스킵: {}", begnDtm);
+			                continue; // 필터링 탈락
+			            }
+
+			            DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+			            LocalDate bidStartDate = LocalDateTime.parse(begnDtm, inFmt).toLocalDate();
+
+			            // ✅ 오늘 기준 60일 이전 / 30일 이후 범위 검사
+			            if (bidStartDate.isBefore(startDate) || bidStartDate.isAfter(endDate)) {
+			                log.debug("⏭️ 입찰시작일 범위 밖: {}", begnDtm);
+			                continue;
+			            }
+
+			            item.setPbctBegnDtm(begnDtm);
+
+			        } catch (Exception e) {
+			            log.warn("⚠️ pbctBegnDtm 파싱 실패: {}", e.getMessage());
+			            continue;
+			        }
+			        // 🔹 날짜 필터링 끝
+			        
 					// 🔹 같은 공고번호 중 공매번호가 큰 것만 유지 (최신 공매)
 					EasybidItem existing = latestItemsMap.get(plnmNo);
 					if (existing == null || existing.getPbctNo() < pbctNo) {
@@ -360,7 +386,7 @@ public class EasybidService {
 		return easybidMapper.getDetails(id);
 	}
 
-	public EasybidItem findByUuId(String uuid) {
+	public EasybidItem findByUuid(String uuid) {
 		return easybidMapper.findUuid(uuid);
 	}
 	
