@@ -25,6 +25,11 @@ repositories {
 }
 
 dependencies {
+	// WebClient 사용 시 (Reactive Web - WebFlux)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    
+	// Scheduler (Quartz)
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
 	
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'

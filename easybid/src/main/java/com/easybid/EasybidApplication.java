@@ -3,7 +3,9 @@ package com.easybid;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @MapperScan("com.easybid.mapper")
 @SpringBootApplication
 public class EasybidApplication /*implements CommandLineRunner*/ {
