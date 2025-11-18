@@ -18,7 +18,7 @@ public class EasybidApiService {
 	@Value("${openapi.easybid.url}")
 	private String baseUrl;
 	
-//	생성자 직접 생성, @RequiredArgsConstructor를 사용해서도 진행 가능.
+//	생성자 직접 생성, 기본 생성자는 @RequiredArgsConstructor 사용 가능.
 	public EasybidApiService(WebClient.Builder builder,
 			@Value("${openapi.easybid.url}") String baseUrl,
 			@Value("${openapi.easybid.serviceKey}") String serviceKey) {
